@@ -55,8 +55,6 @@ PyTorch-Ignite as the core training engine — proposed as part of
 > ⚠️ Known limitation: repeated characters cause minor prediction errors.
 > Next step: augment training data with more repeated-char sequences.
 
----
 
-## 🗂️ Structure
 
 

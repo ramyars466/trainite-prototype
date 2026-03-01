@@ -1,0 +1,28 @@
+# Training config for trainite prototype
+
+seed: 42
+
+data:
+  vocab_size: 128        # ASCII
+  max_seq_len: 16
+  train_size: 10000
+  val_size: 2000
+
+model:
+  embed_dim: 128
+  num_layers: 3
+  nhead: 4
+  dim_feedforward: 256
+  dropout: 0.1
+
+training:
+  max_epochs: 80
+  batch_size: 32
+  lr: 0.001
+  weight_decay: 0.0
+  device: "cuda"         # or "cpu"
+
+logging:
+  log_interval: 10
+  output_dir: "runs"
+  checkpoint_dir: "checkpoints"

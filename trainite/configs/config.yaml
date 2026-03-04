@@ -1,0 +1,18 @@
+# Dataset
+vocab: "abcdefghijklmnopqrstuvwxyz"
+seq_len: 6
+dataset_size: 2000
+
+# Model
+embed_dim: 128
+num_heads: 4
+num_layers: 3
+dropout: 0.1
+
+# Training
+batch_size: 64
+lr: 0.0003
+max_epochs: 10
+
+# Output
+output_dir: output

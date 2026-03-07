@@ -1,10 +1,3 @@
-Below is a **professional README** you can directly replace your current one with.
-It reflects **everything you built during this process** and is written in a style that **maintainers and GSoC reviewers expect**.
-
-You can copy-paste it into your repository `README.md`.
-
----
-
 # 🚀 Trainite Prototype
 
 ### GSoC 2026 Prototype – Modular LM Training Toolkit using PyTorch-Ignite

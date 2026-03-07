@@ -346,5 +346,4 @@ The goal is to demonstrate how a modular training toolkit can be built around **
 * PyTorch-Ignite
 * Google Summer of Code
 
----
-viewing GSoC prototypes**.
+

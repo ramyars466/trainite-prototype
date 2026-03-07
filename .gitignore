@@ -4,3 +4,4 @@ output/
 *.pt
 __pycache__/
 *.pyc
+trainite.egg-info/

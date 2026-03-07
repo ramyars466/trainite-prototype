@@ -1,6 +1,7 @@
 import math
 import torch
 import torch.nn as nn
+from trainite.models.registry import register_model
 
 
 class PositionalEncoding(nn.Module):
@@ -27,6 +28,7 @@ class PositionalEncoding(nn.Module):
         return x + self.pe[:, :x.size(1)]
 
 
+@register_model("transformer")
 class DecoderOnlyTransformer(nn.Module):
 
     def __init__(self, vocab_size, embed_dim, num_heads, num_layers, dropout):

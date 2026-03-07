@@ -1,18 +1,22 @@
-# Dataset
 vocab: "abcdefghijklmnopqrstuvwxyz"
-seq_len: 6
-dataset_size: 2000
 
-# Model
-embed_dim: 128
-num_heads: 4
-num_layers: 3
-dropout: 0.1
+dataset:
+  name: string_reverse
+  params:
+    vocab: "abcdefghijklmnopqrstuvwxyz"
+    seq_length: 10
+    dataset_size: 20000
 
-# Training
-batch_size: 64
-lr: 0.0003
-max_epochs: 10
+model:
+  name: transformer
+  params:
+    embed_dim: 64
+    num_heads: 4
+    num_layers: 2
+    dropout: 0.1
 
-# Output
-output_dir: output
+training:
+  batch_size: 32
+  lr: 0.001
+  max_epochs: 30
+  output_dir: output

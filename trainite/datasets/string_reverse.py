@@ -1,8 +1,10 @@
 import random
 import torch
 from torch.utils.data import Dataset
+from trainite.datasets.registry import register_dataset
 
 
+@register_dataset("string_reverse")
 class StringReversalDataset(Dataset):
 
     def __init__(self, vocab, seq_len, size, seed=42):

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trainite"
+version = "0.1.0"
+description = "A modular deep learning training framework prototype"
+authors = [
+    {name = "Ramya"}
+]
+
+dependencies = [
+    "torch",
+    "typer",
+    "pyyaml",
+    "pytorch-ignite",
+    "tensorboard"
+]
+
+[project.scripts]
+trainite = "trainite.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["trainite*"]

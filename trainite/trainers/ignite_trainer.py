@@ -3,35 +3,39 @@ import torch
 import torch.nn as nn
 
 from ignite.engine import Engine, Events
-from ignite.handlers import ModelCheckpoint, global_step_from_engine
+from ignite.handlers import ModelCheckpoint, EarlyStopping, global_step_from_engine
+from torch.utils.tensorboard import SummaryWriter
+
+from trainite.utils.experiment import log_metrics
 
 
-def create_trainer(
-    model,
-    train_loader,
-    val_loader,
-    config,
-):
+def create_trainer(model, train_loader, val_loader, config, run_dir):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
     model = model.to(device)
 
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=config["lr"]
+        lr=config["training"]["lr"],
     )
 
     criterion = nn.CrossEntropyLoss(ignore_index=0)
 
-    os.makedirs(config["output_dir"], exist_ok=True)
+    writer = SummaryWriter("runs/trainite_experiment")
+
+    os.makedirs(config["training"]["output_dir"], exist_ok=True)
 
     vocab_size = model.fc_out.out_features
 
+    # store metrics
+    metrics_log = {
+        "train_loss": [],
+        "val_loss": []
+    }
 
-    # -----------------------
+    # -----------------------------
     # TRAIN STEP
-    # -----------------------
+    # -----------------------------
 
     def train_step(engine, batch):
 
@@ -52,15 +56,17 @@ def create_trainer(
         )
 
         loss.backward()
-
         optimizer.step()
+
+        writer.add_scalar("train/loss", loss.item(), engine.state.iteration)
+
+        metrics_log["train_loss"].append(loss.item())
 
         return loss.item()
 
-
-    # -----------------------
+    # -----------------------------
     # EVAL STEP
-    # -----------------------
+    # -----------------------------
 
     def eval_step(engine, batch):
 
@@ -80,17 +86,16 @@ def create_trainer(
                 tgt_label.reshape(-1)
             )
 
+        metrics_log["val_loss"].append(loss.item())
+
         return loss.item()
 
-
     trainer = Engine(train_step)
-
     evaluator = Engine(eval_step)
 
-
-    # -----------------------
-    # LOGGING
-    # -----------------------
+    # -----------------------------
+    # TRAIN LOG
+    # -----------------------------
 
     @trainer.on(Events.EPOCH_COMPLETED)
     def log_training(engine):
@@ -99,22 +104,44 @@ def create_trainer(
 
         evaluator.run(val_loader)
 
+    # -----------------------------
+    # VALIDATION LOG
+    # -----------------------------
 
     @evaluator.on(Events.COMPLETED)
     def log_validation(engine):
 
-        print(f"           | Val Loss: {engine.state.output:.4f}")
+        val_loss = engine.state.output
 
+        print(f"           | Val Loss: {val_loss:.4f}")
 
-    # -----------------------
-    # CHECKPOINT
-    # -----------------------
+        writer.add_scalar("validation/loss", val_loss, trainer.state.epoch)
+
+    # -----------------------------
+    # EARLY STOPPING
+    # -----------------------------
+
+    def score_function(engine):
+        val_loss = engine.state.output
+        return -val_loss
+
+    early_stopping = EarlyStopping(
+        patience=5,
+        score_function=score_function,
+        trainer=trainer
+    )
+
+    evaluator.add_event_handler(Events.COMPLETED, early_stopping)
+
+    # -----------------------------
+    # MODEL CHECKPOINT
+    # -----------------------------
 
     checkpoint = ModelCheckpoint(
-        config["output_dir"],
-        filename_prefix="best",
+        config["training"]["output_dir"],
+        filename_prefix="best_model",
         n_saved=1,
-        score_function=lambda e: -evaluator.state.output,
+        score_function=score_function,
         score_name="val_loss",
         global_step_transform=global_step_from_engine(trainer),
         require_empty=False
@@ -126,5 +153,12 @@ def create_trainer(
         {"model": model}
     )
 
+    # -----------------------------
+    # SAVE METRICS AFTER TRAINING
+    # -----------------------------
+
+    @trainer.on(Events.COMPLETED)
+    def save_metrics(engine):
+        log_metrics(run_dir, metrics_log)
 
     return trainer

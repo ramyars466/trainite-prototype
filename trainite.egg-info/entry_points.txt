@@ -1,0 +1,2 @@
+[console_scripts]
+trainite = trainite.cli:app

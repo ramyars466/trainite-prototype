@@ -1,5 +1,0 @@
-torch
-typer
-pyyaml
-pytorch-ignite
-tensorboard

@@ -9,6 +9,9 @@ from trainite.models.registry import get_model
 from trainite.trainers.ignite_trainer import create_trainer
 from trainite.utils.experiment import create_experiment, log_metrics
 from trainite.utils.experiment import create_experiment
+from trainite.datasets.registry import load_plugin_datasets
+from trainite.models.registry import load_plugin_models
+from trainite.utils.experiment import create_experiment, save_config
 
 
 def load_config(path):
@@ -22,6 +25,12 @@ def load_config(path):
 def main(config_path):
 
     config = load_config(config_path)
+
+    run_dir = create_experiment(config)
+    save_config(run_dir, config)
+    
+    load_plugin_datasets()
+    load_plugin_models()
 
     run_dir = create_experiment(config)
     print(f"Experiment directory created at: {run_dir}")

@@ -1,35 +1,55 @@
 import os
 import json
-import datetime
-import shutil
+from datetime import datetime
 
 
 def create_experiment(config):
+    """
+    Create a new experiment run directory.
+    """
 
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    base_dir = "experiments"
+    os.makedirs(base_dir, exist_ok=True)
 
-    run_dir = os.path.join("experiments", f"run_{timestamp}")
+    run_name = datetime.now().strftime("run_%Y%m%d_%H%M%S")
 
+    run_dir = os.path.join(base_dir, run_name)
     os.makedirs(run_dir, exist_ok=True)
-
-    # save config
-    config_path = os.path.join(run_dir, "config.yaml")
-
-    try:
-        import yaml
-        with open(config_path, "w") as f:
-            yaml.dump(config, f)
-    except Exception:
-        pass
 
     print(f"Experiment directory created at: {run_dir}")
 
     return run_dir
 
 
+def save_config(run_dir, config):
+    """
+    Save experiment configuration.
+    """
+
+    config_path = os.path.join(run_dir, "config.json")
+
+    with open(config_path, "w") as f:
+        json.dump(config, f, indent=4)
+
+
 def log_metrics(run_dir, metrics):
+    """
+    Save training metrics.
+    """
 
-    metrics_file = os.path.join(run_dir, "metrics.json")
+    metrics_path = os.path.join(run_dir, "metrics.json")
 
-    with open(metrics_file, "w") as f:
+    with open(metrics_path, "w") as f:
         json.dump(metrics, f, indent=4)
+
+
+def save_model(run_dir, model_state):
+    """
+    Save trained model weights.
+    """
+
+    import torch
+
+    model_path = os.path.join(run_dir, "model.pt")
+
+    torch.save(model_state, model_path)

@@ -5,3 +5,17 @@ output/
 __pycache__/
 *.pyc
 trainite.egg-info/
+
+*.pyo
+*.pyd
+
+
+build/
+dist/
+
+
+
+.vscode/
+.idea/
+
+*.log

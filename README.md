@@ -1,51 +1,53 @@
 # 🚀 Trainite Prototype
 
-### GSoC 2026 Prototype – Modular LM Training Toolkit using PyTorch-Ignite
+### GSoC 2026 Prototype — Modular LM Training Toolkit built with PyTorch-Ignite
 
-A **research-oriented prototype** for the proposed **Trainite training framework**, built using **PyTorch** and **PyTorch-Ignite**.
+This repository contains a **prototype implementation of Trainite**, a modular training toolkit for language models built on top of **PyTorch** and **PyTorch-Ignite**.
 
-The goal is to demonstrate a **clean, modular, and extensible deep learning training pipeline** that can serve as the foundation for a full training toolkit.
+The goal of this prototype is to demonstrate how a **clean, extensible training framework** can be designed for research workflows while minimizing boilerplate code.
+
+This project explores how **PyTorch-Ignite can serve as the core training engine** for a lightweight but powerful ML training toolkit.
 
 ---
 
 # 📌 Project Motivation
 
-Training deep learning models often requires a large amount of boilerplate code for:
+Training deep learning models typically requires writing repetitive code for:
 
 * training loops
-* validation
+* validation logic
 * checkpointing
 * experiment tracking
-* dataset/model management
+* dataset and model management
 
-The purpose of **Trainite** is to build a **lightweight training framework** that simplifies these tasks while keeping flexibility for research workflows.
+The goal of **Trainite** is to provide a **lightweight, modular training framework** that simplifies these tasks while remaining flexible for research and experimentation.
 
-This prototype explores how **PyTorch-Ignite can serve as the core training engine** for such a toolkit.
+This prototype explores a design where **datasets, models, and training pipelines are dynamically configurable and extensible**.
 
 ---
 
 # 🧠 Key Idea
 
-Trainite follows a **config-driven architecture** where experiments are defined through a configuration file.
+Trainite follows a **config-driven architecture** where experiments are defined using a configuration file.
 
 The framework automatically handles:
 
 * dataset loading
-* model construction
+* model creation
 * training loops
 * validation
 * checkpointing
 * experiment tracking
 
-All controlled via a simple CLI interface.
+All operations are controlled through a **simple CLI interface**.
 
 ---
 
 # ✨ Implemented Features
 
-### ⚙️ CLI Interface
+## CLI Interface
 
-Train models and run inference from the command line.
+Train models and run inference directly from the command line.
 
 ```bash
 trainite train
@@ -54,7 +56,7 @@ trainite generate hello
 
 ---
 
-### ⚙️ Config-Driven Experiments
+## Config-Driven Experiments
 
 All experiment parameters are defined in:
 
@@ -83,38 +85,44 @@ model:
 training:
   batch_size: 64
   lr: 0.0003
-  max_epochs: 10
+  max_epochs: 30
   output_dir: output
 ```
 
-This allows experiments to be easily reproducible.
+This allows experiments to be **fully reproducible**.
 
 ---
 
-### ⚙️ Dataset Registry System
+# 🧩 Dataset Registry System
 
-Datasets are dynamically registered using a registry pattern.
+Datasets are dynamically registered using a **registry pattern**.
+
+Example:
 
 ```python
 @register_dataset("reverse")
 class StringReversalDataset(Dataset):
 ```
 
-Datasets can then be loaded automatically:
+Datasets can be loaded dynamically:
 
 ```python
 dataset = get_dataset("reverse")
 ```
 
-This design allows **plugin-style datasets** in the future.
+Trainite also supports **plugin datasets**:
+
+```
+trainite register-dataset my_dataset.py
+```
 
 ---
 
-### ⚙️ Model Registry System
+# 🧩 Model Registry System
 
-Multiple architectures can be registered and selected via config.
+Models are registered dynamically and selected via configuration.
 
-Currently supported:
+Supported architectures in this prototype:
 
 * Transformer
 * LSTM
@@ -127,32 +135,25 @@ model:
   name: transformer
 ```
 
----
-
-### ⚙️ Experiment Tracking
-
-Each training run automatically creates an experiment folder.
+External models can be added using:
 
 ```
-experiments/
-    run_20260307_143849/
-        config.yaml
-        metrics.json
+trainite register-model my_model.py
 ```
-
-This enables easy experiment comparison and reproducibility.
 
 ---
 
-### ⚙️ PyTorch-Ignite Training Engine
+# ⚙️ Training Engine
 
-Training is powered by **PyTorch-Ignite**, providing:
+Training is implemented using **PyTorch-Ignite Engine**, providing:
 
-* clean training loops
-* event handlers
-* modular callbacks
+* modular training loops
+* validation loops
+* checkpoint saving
+* early stopping
+* TensorBoard logging
 
-Implemented handlers include:
+Implemented Ignite handlers include:
 
 * `ModelCheckpoint`
 * `EarlyStopping`
@@ -160,24 +161,83 @@ Implemented handlers include:
 
 ---
 
-### ⚙️ TensorBoard Logging
+# 📊 Experiment Tracking
 
-Training metrics are logged and can be visualized with:
+Each training run automatically creates an experiment folder:
 
-```bash
-tensorboard --logdir runs
+```
+experiments/
+    run_20260312_210824/
+        config.json
+        metrics.json
 ```
 
-Example metrics tracked:
+This allows experiments to be:
 
-* training loss
-* validation loss
+* reproducible
+* comparable
+* organized
 
 ---
 
-# 🧠 Example Task
+# 📈 Experiment Viewer
 
-The prototype demonstrates training a model to perform **sequence reversal**.
+List all experiment runs:
+
+```
+trainite experiments
+```
+
+Example output:
+
+```
+run_20260307_141805
+run_20260308_151124
+run_20260312_210824
+```
+
+---
+
+# 🔎 Experiment Inspection
+
+View the details of a specific experiment:
+
+```
+trainite experiment run_20260312_210824
+```
+
+Displays:
+
+* experiment configuration
+* training metrics
+
+---
+
+# 📊 Experiment Comparison
+
+Compare model performance across experiment runs:
+
+```
+trainite compare
+```
+
+Example output:
+
+```
+Run                          Best Val Loss
+---------------------------------------------
+run_20260307_161011          0.000733
+run_20260312_210824          0.000812
+run_20260308_151124          0.001112
+```
+
+This helps quickly identify the **best performing experiment**.
+
+---
+
+# 🧪 Example Task
+
+The prototype demonstrates training models to perform **sequence reversal**.
 
 Example:
 
@@ -186,7 +246,11 @@ Input  : hello
 Output : olleh
 ```
 
-This toy task verifies that the training pipeline works correctly.
+This toy task verifies the correctness of:
+
+* dataset pipeline
+* training pipeline
+* inference pipeline
 
 ---
 
@@ -196,23 +260,10 @@ Example training output:
 
 | Epoch | Train Loss | Val Loss |
 | ----- | ---------- | -------- |
-| 1     | 2.54       | 2.44     |
-| 5     | 0.97       | 0.69     |
-| 10    | 0.31       | 0.16     |
-
----
-
-### Example Predictions
-
-| Input  | Expected | Model Output        |
-| ------ | -------- | ------------------- |
-| abcdef | fedcba   | fedcba              |
-| ignite | etingi   | etingi              |
-| python | nohtyp   | nohtyp              |
-| zxywvu | uvwyxz   | uvwyxz              |
-| hello  | olleh    | close approximation |
-
-Minor inaccuracies occur when repeated characters appear.
+| 1     | 2.31       | 2.02     |
+| 5     | 0.60       | 0.36     |
+| 10    | 0.17       | 0.03     |
+| 20    | 0.05       | 0.01     |
 
 ---
 
@@ -221,8 +272,8 @@ Minor inaccuracies occur when repeated characters appear.
 ```
 trainite/
 │
-├── cli.py                # CLI interface
-├── train.py              # main training entry
+├── cli.py
+├── train.py
 │
 ├── configs/
 │   └── config.yaml
@@ -240,9 +291,14 @@ trainite/
 ├── trainers/
 │   └── ignite_trainer.py
 │
-└── utils/
-    ├── inference.py
-    └── experiment.py
+├── utils/
+│   ├── inference.py
+│   ├── experiment.py
+│   └── experiment_viewer.py
+│
+└── plugins/
+    ├── datasets.json
+    └── models.json
 ```
 
 ---
@@ -251,47 +307,36 @@ trainite/
 
 Clone the repository:
 
-```bash
-git clone https://github.com/ramyars466/trainite-prototype.git
+```
+git clone https://github.com/ramyars466/trainite-prototype
 cd trainite-prototype
 ```
 
-Install in editable mode:
+Install the package:
 
-```bash
+```
 pip install -e .
 ```
 
 ---
 
-# 🚀 Usage
+# 🚀 CLI Commands
 
-### Train a model
-
-```
-trainite train
-```
-
----
-
-### Run inference
-
-```
-trainite generate hello
-```
-
-Example output:
-
-```
-Generated Text:
-olleh
-```
+| Command                     | Description                |
+| --------------------------- | -------------------------- |
+| `trainite train`            | Train model                |
+| `trainite generate <text>`  | Run inference              |
+| `trainite experiments`      | List experiment runs       |
+| `trainite experiment <run>` | Show experiment details    |
+| `trainite compare`          | Compare experiment results |
+| `trainite register-dataset` | Register dataset plugin    |
+| `trainite register-model`   | Register model plugin      |
 
 ---
 
 # 📈 TensorBoard Visualization
 
-Launch TensorBoard:
+Start TensorBoard:
 
 ```
 tensorboard --logdir runs
@@ -312,23 +357,23 @@ to visualize training curves.
 Trainite is designed around:
 
 * modular architecture
-* registry pattern
-* config-driven experimentation
-* extensibility for new models and datasets
-* minimal boilerplate for research workflows
+* registry-based extensibility
+* config-driven experiments
+* minimal training boilerplate
+* extensible research workflows
 
 ---
 
 # 🔮 Future Improvements
 
-Possible future extensions include:
+Potential future extensions include:
 
-* experiment dashboard
-* dataset plugins
-* evaluation commands
-* multi-task training support
-* hyperparameter sweeps
-* distributed training support
+* experiment dashboard UI
+* dataset plugin ecosystem
+* hyperparameter search support
+* distributed training
+* multi-task training
+* model evaluation tools
 
 ---
 
@@ -336,7 +381,7 @@ Possible future extensions include:
 
 This prototype was developed as a **proof-of-concept for the Trainite project idea** proposed under **Google Summer of Code 2026 with the PyTorch-Ignite organization**.
 
-The goal is to demonstrate how a modular training toolkit can be built around **PyTorch-Ignite's flexible engine system**.
+The goal is to design a **lightweight but extensible training toolkit for language models built around PyTorch-Ignite's flexible engine system**.
 
 ---
 
@@ -345,5 +390,7 @@ The goal is to demonstrate how a modular training toolkit can be built around **
 * PyTorch
 * PyTorch-Ignite
 * Google Summer of Code
+
+
 
 

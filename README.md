@@ -390,7 +390,8 @@ The goal is to design a **lightweight but extensible training toolkit for langua
 * PyTorch
 * PyTorch-Ignite
 * Google Summer of Code
-
+  
+<img width="769" height="456" alt="image" src="https://github.com/user-attachments/assets/7c45d2b7-9837-4e48-b505-e9143fa4a033" />
 <img width="626" height="130" alt="image" src="https://github.com/user-attachments/assets/dee03c5a-3531-4026-934e-2c383f238a30" />
 <img width="643" height="308" alt="image" src="https://github.com/user-attachments/assets/e1daf942-8ce1-4a59-96b3-2efa2aa465ea" />
 

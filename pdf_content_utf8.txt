@@ -1,0 +1,240 @@
+PyTorchIgnite Trainite Language Model Training Toolbox 
+Google Summer of Code 2026 Proposal 
+Project size: 175 hours | Organization: NumFOCUS | Sub-Organization: PyTorch-Ignite 
+Mentors :@ Victor vfdev-5 , @ Gonzalo goanpeca 
+ 
+  
+Applicant Information 
+Full Name: Ramya RS 
+Email: ramyars066@gmail.com 
+GitHub: https://github.com/ramyars466 
+LinkedIn: https://linkedin.com/in/ramya-r-s-a12a2a327 
+Discord: ramyars_63792 
+Timezone: IST (Asia/Kolkata | UTC+5:30) 
+University: VTU (Visvesvaraya Technological University), Belgaum, Karnataka (2023–2027) 
+Country of Residence: India 
+Project Summary 
+PyTorch-Ignite already provides a flexible and reliable foundation for building training workflows, but many 
+language-model experimentation tasks still require repetitive boilerplate around dataset loading, model setup, 
+training loops, evaluation, checkpointing, and logging. For small and medium -scale language modeling 
+experiments, that slows down iteration and makes reproducibility harder than it should be. 
+This proposal builds on that reality. I am proposing Trainite, a modular training toolbox built on top of PyTorch -
+Ignite. The goal is to provide a reusable, configuration-driven workflow where users can plug in their own model, 
+dataset, and training settings without rewriting the training pipeline every time. Trainite will focus on practical 
+language-model workflows such as synthetic sequence tasks and small benchmark -style experiments, rather 
+than large-scale LLM training. 
+The project lines up closely with the official PyTorch-Ignite GSoC idea for a toolbox for training language models. 
+I want the final result to help researchers test ideas faster, keep experiments organized, and reuse a clean 
+training structure across multiple projects. 
+My Relevant Experience 
+I have already contributed to PyTorch -Ignite through three merged pull requests, which gave me direct 
+experience with the repository structure, review process, and contributor workflow. These changes were mostly 
+focused on typing improvements and code cleanup in the handlers and stores areas of the project, so I also 
+became more comfortable reading and modifying real project code rather than only working on isolated scripts. 
+• Merged PR #3584: https://github.com/pytorch/ignite/pull/3584 
+• Merged PR #3590: https://github.com/pytorch/ignite/pull/3590 
+• Merged PR #3594: https://github.com/pytorch/ignite/pull/3594 
+I also already built a working prototype for Trainite. The repository contains the basic direction I want to 
+continue: CLI commands, configuration -driven training, dataset and model registries, Ignite -based training, 
+inference support, and experiment tracking. Because of that, I am not starting from zero; I already have a 
+concrete base to improve, simplify, and complete. 
+My Trainite prototype repository: https://github.com/ramyars466/trainite-prototype 
+Why This Project Matters 
+A lot of training code in research is temporary. It works once, but it is not designed to be reused or compared 
+across experiments. That makes it harder to iterate, harder to reproduce results, and harder for new 
+contributors to learn from it. 
+Trainite is meant to reduce that friction. For the PyTorch-Ignite community, it can provide a practical higher-level 
+workflow on top of Ignite while still keeping the flexibility that makes Ignite valuable. It can also make 
+experimentation more structured through configuration files, experiment folders, checkpoints, and logging. In 
+that sense, this project is not just about one model or one demo. It is about creating a small but useful toolbox 
+that can keep growing. 
+ 
+Technical Approach 
+CLI layer: The CLI will be the entry point for common tasks such as training, evaluation, listing experiments, and 
+comparing runs. My goal is to make the user workflow straightforward without forcing people to touch the 
+internal training logic every time. 
+Configuration layer: Training runs will be defined through YAML files. The configuration will describe the 
+dataset, model, hyperparameters, logging behavior, and output directory. This matters because reproducibility 
+becomes much easier when the same experiment can be rerun from a saved config. 
+Registry layer: I want datasets and models to be handled through registries. That way, users can add a dataset or 
+a model without changing the main training pipeline. This also keeps the project easy to extend later. 
+Training and evaluation layer: The core training loop will remain based on PyTorch -Ignite. I want Trainite to 
+support training, validation, checkpointing, early stopping, and a separate evaluation workflow. I especially want 
+evaluation to be a proper command instead of something users have to script manually. 
+Experiment tracking layer: Each run should create a clear output directory with the configuration, logs, 
+checkpoints, and metrics. That makes it easier to compare experiments and understand what produced a result 
+later on. 
+ 
+Simple Architecture 
+The structure I am aiming for is shown below. The goal is to keep the top -level workflow simple for users while 
+keeping the internals modular enough that new datasets, models, and training behaviors can be added later 
+without rewriting the whole project. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1. Trainite architecture overview. 
+ 
+ 
+Project Goals and Deliverables 
+• Make Trainite an installable Python package that works cleanly from a fresh install. 
+• Provide a CLI for training, evaluation, experiment listing, and comparison. 
+• Support YAML-based configuration so experiments stay reproducible. 
+• Keep dataset and model registries as first-class extension points. 
+• Add a reliable evaluation workflow and improve checkpoint loading. 
+• Improve experiment tracking with logs, metrics, and saved configs. 
+• Write documentation and examples so the project is easy to understand and extend. 
+• Add tests for the core training, evaluation, and registry flows. 
+Week-by-Week Timeline 
+I am intentionally keeping the work broken into small parts so each phase produces something useful and 
+reviewable. That fits the contributor guide’s advice to divide the work into small self -contained subprojects, 
+communicate regularly, and leave enough time for mentor review before evaluations. 
+ 
+ 
+ 
+ 
+ 
+
+Time Plan 
+ 
+Community Bonding 
+ 
+I will spend this period reviewing the current prototype carefully, aligning the 
+project scope with mentor feedback, and finalizing the exact plan for 
+implementation. I will also use this time to understand the current CLI flow, 
+configuration handling, and registry design so the coding phase starts with a clear 
+direction. 
+ 
+Week 1 
+ 
+I will clean up the existing project structure and refactor the parts that are 
+already in place so the codebase is easier to maintain. My focus will be on making 
+the foundation stable before adding more features. 
+ 
+Week 2 
+I will improve the CLI workflow and make the core training path more consistent 
+and user-friendly. By the end of this week, the project should feel more organized 
+and ready for the evaluation and experiment-related features.. 
+ 
+Week 3 
+I will start implementing trainite evaluate and make evaluation a proper first -
+class workflow instead of an extra script. I will also review checkpoint loading 
+carefully so evaluation can use trained models reliably. 
+ 
+Week 4 
+I will complete the initial evaluation flow and add metric computation for the 
+basic use case. This milestone should give a complete end -to-end path from 
+training to evaluation on a sample experiment. 
+ 
+Week 5 
+I will improve the dataset and model registry system so it becomes easier to add or 
+switch components without changing the training core. This work will make Trainite 
+feel more modular and future-proof. 
+ 
+ 
+Week 6 
+I will expand and test support for multiple model architectures and make sure the 
+registry design remains simple to use. The goal is to make the toolbox useful for 
+experimentation, not just for a single demo setup. 
+ 
+Week 7 
+ 
+I will improve experiment tracking so each run saves a clearer record of the 
+config, logs, and metrics. This will make it easier to reproduce results and 
+compare experiments later. 
+ 
+Week 8 
+I will work on the experiment comparison workflow so multiple runs can be 
+reviewed more easily. By this stage, I want the project to support meaningful 
+comparison between different model and dataset choices. 
+ 
+Week 9 
+I will prepare the package for installation and clean up the project structure so it 
+is easier to distribute and maintain. I will also begin final checks on the 
+documentation so the project feels usable from the outside. 
+ 
+Week 10 
+I will prepare the package for installation and clean up the project structure so it 
+is easier to distribute and maintain. I will also begin final checks on the 
+documentation so the project feels usable from the outside. 
+ 
+Final Polishing Period 
+I will focus on testing, bug fixes, code cleanup, and final mentor feedback. I want 
+to leave enough time here so the final submission is not rushed and the codebase 
+is stable for review. 
+Test Plan 
+Layer What I will validate Why it matters 
+Local development CLI behavior, example training runs, and 
+config parsing 
+Fast feedback while building 
+Unit tests Registry behavior, checkpoint loading, and 
+evaluation functions 
+Prevents regressions in core logic 
+Integration tests End-to-end flow from config to training to 
+evaluation 
+Verifies the toolbox works as a whole 
+User-facing validation Installability and ease of adding new 
+components 
+Shows that the project is practical for 
+real users 
+Success Metrics and Validation 
+• Trainite can be installed and used as a normal package. 
+• The CLI can run training and evaluation successfully. 
+• A user can train a sample model with a YAML config. 
+• Built-in datasets work correctly. 
+• New datasets and models can be registered easily. 
+• The project produces reproducible experiment outputs. 
+• Documentation is clear enough for a new contributor to follow. 
+• The codebase remains maintainable and aligned with PyTorch-Ignite’s standards. 
+Risks and Mitigations 
+Risk Mitigation 
+Scope becoming too large Keep the project focused on modular training, evaluation, and 
+documentation rather than expanding into broader serving or 
+automation features. 
+Inference or checkpoint behavior may need refinement Build evaluation support early and test checkpoint loading repeatedly 
+throughout development. 
+Registry or packaging design may need restructuring Refactor incrementally and keep PRs small so maintainers can give 
+feedback early. 
+Community Engagement and Long-Term Value 
+I plan to stay active with the PyTorch -Ignite community throughout the project. My aim is not only to complete 
+the GSoC work, but also to continue contributing after the summer ends. I will share progress clearly, respond to 
+mentor feedback quickly, and keep the work visible through GitHub activity. 
+To keep Trainite maintainable, I will write clear code and docstrings, keep PRs small and focused, explain 
+implementation decisions in PR descriptions, and align changes with the project’s existing style and conventions. 
+This project is also important to me personally because it strengthens the exact skills I want to build: practical 
+PyTorch engineering, clean open-source contribution habits, modular project design, and regular communication 
+with maintainers. 
+Why I’m the Right Candidate 
+• First, I already have direct contribution experience with PyTorch -Ignite through three merged pull requests. 
+That means I am not approaching this project as a stranger to the codebase. 
+• Second, I already built a working prototype of Trainite. That gives this proposal real technical grounding and 
+lowers the risk of starting from scratch. 
+• Third, the project fits my current skills and long -term goals very well. I am motivated to work on an open -
+source tool that benefits the community, stays aligned with the PyTorch-Ignite ecosystem, and can continue 
+to grow after the GSoC period. 
+ 
+Trainite is a strong fit for PyTorch -Ignite because it turns the official project idea into a practical, reusable tool 
+that helps users train and evaluate language models with less boilerplate and better structure. I already have the 
+prototype, the merged contributions, and the commitment to carry the work through in a focused way. 
+My goal is to deliver a project that is useful, maintainable, well documented, and aligned with the spirit of 
+PyTorch-Ignite: flexible, clean, and built for real experimentation. 
+I look forward to the opportunity to work on this project during Google Summer of Code 2026 and to continue 
+contributing to the community beyond the program. 
+Thank you for considering my proposal! 
+ 

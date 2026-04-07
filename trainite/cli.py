@@ -14,7 +14,7 @@ app = typer.Typer()
 
 
 @app.command()
-def train(config: str = "trainite/configs/config.yaml"):
+def train(config: str = typer.Argument("trainite/configs/config.yaml", help="Path to config.yaml")):
     """
     Train the model using config.yaml
     """

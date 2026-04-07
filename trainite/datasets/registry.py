@@ -18,7 +18,7 @@ def register_dataset(name):
 
 
 def load_plugin_datasets():
-
+#this reads the json form the plugins folder
     plugins_file = "trainite/plugins/datasets.json"
 
     if not os.path.exists(plugins_file):
@@ -28,7 +28,7 @@ def load_plugin_datasets():
         plugins = json.load(f)
 
     for name, path in plugins.items():
-
+ # Dynamically load the Python file
         if not os.path.exists(path):
             continue
 
@@ -38,7 +38,7 @@ def load_plugin_datasets():
 
         if hasattr(module, "Dataset"):
             DATASET_REGISTRY[name] = module.Dataset
-
+            # If the file has a class called "Dataset", register it
 
 def get_dataset(name):
 

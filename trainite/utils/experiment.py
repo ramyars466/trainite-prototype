@@ -7,7 +7,7 @@ def create_experiment(config):
     """
     Create a new experiment run directory.
     """
-
+ # Creates: experiments/run_20260403_143000/
     base_dir = "experiments"
     os.makedirs(base_dir, exist_ok=True)
 
@@ -25,6 +25,7 @@ def save_config(run_dir, config):
     """
     Save experiment configuration.
     """
+     # Saves: experiments/run_20260403_143000/config.json
 
     config_path = os.path.join(run_dir, "config.json")
 
@@ -36,6 +37,8 @@ def log_metrics(run_dir, metrics):
     """
     Save training metrics.
     """
+    # Saves: experiments/run_20260403_143000/metrics.json
+    # {"train_loss": [0.9, 0.7, 0.5, ...], "val_loss": [0.8, 0.6, ...]}
 
     metrics_path = os.path.join(run_dir, "metrics.json")
 

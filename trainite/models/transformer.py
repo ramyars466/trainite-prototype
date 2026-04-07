@@ -28,17 +28,17 @@ class PositionalEncoding(nn.Module):
         return x + self.pe[:, :x.size(1)]
 
 
-@register_model("transformer")
+@register_model("transformer")   # ← Auto-registers in MODEL_REGISTRY
 class DecoderOnlyTransformer(nn.Module):
 
     def __init__(self, vocab_size, embed_dim, num_heads, num_layers, dropout):
 
         super().__init__()
-
+ # Step 1: Embedding layer — converts token IDs to vectors
         self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=0)
-
+        # Step 2: Add positional encoding
         self.pos_encoding = PositionalEncoding(embed_dim)
-
+      # Step 3: Transformer decoder layers
         decoder_layer = nn.TransformerDecoderLayer(
             d_model=embed_dim,
             nhead=num_heads,
@@ -50,13 +50,13 @@ class DecoderOnlyTransformer(nn.Module):
             decoder_layer,
             num_layers=num_layers
         )
-
+ # Step 4: Final linear layer — converts back to vocabulary probabilities
         self.fc_out = nn.Linear(embed_dim, vocab_size)
 
         self.embed_dim = embed_dim
 
     def forward(self, src, tgt):
-
+# Convert source tokens to embeddings + add position info
         src_emb = self.pos_encoding(
             self.embedding(src) * math.sqrt(self.embed_dim)
         )
@@ -64,15 +64,16 @@ class DecoderOnlyTransformer(nn.Module):
         tgt_emb = self.pos_encoding(
             self.embedding(tgt) * math.sqrt(self.embed_dim)
         )
-
+  # Causal mask — prevents the model from "cheating" by looking ahead
         tgt_mask = nn.Transformer.generate_square_subsequent_mask(
             tgt.size(1)
         ).to(src.device)
-
+  # Run through transformer decoder
         output = self.decoder(
             tgt_emb,
             src_emb,
             tgt_mask=tgt_mask
         )
 
+        # Convert to vocabulary probabilities
         return self.fc_out(output)

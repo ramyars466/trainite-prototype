@@ -1,3 +1,6 @@
+import os
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import yaml
 import torch
 import trainite.models
@@ -7,11 +10,9 @@ from torch.utils.data import DataLoader
 from trainite.datasets.registry import get_dataset
 from trainite.models.registry import get_model
 from trainite.trainers.ignite_trainer import create_trainer
-from trainite.utils.experiment import create_experiment, log_metrics
-from trainite.utils.experiment import create_experiment
 from trainite.datasets.registry import load_plugin_datasets
 from trainite.models.registry import load_plugin_models
-from trainite.utils.experiment import create_experiment, save_config
+from trainite.utils.experiment import create_experiment, save_config, log_metrics
 
 
 def load_config(path):
@@ -32,8 +33,8 @@ def main(config_path):
     load_plugin_datasets()
     load_plugin_models()
 
-    run_dir = create_experiment(config)
-    print(f"Experiment directory created at: {run_dir}")
+    
+    
 
     vocab = list(config["dataset"]["params"]["vocab"])
 

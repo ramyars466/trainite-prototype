@@ -8,13 +8,13 @@ from torch.utils.tensorboard import SummaryWriter
 
 from trainite.utils.experiment import log_metrics
 
-
+#setup: this is where we define the training loop
 def create_trainer(model, train_loader, val_loader, config, run_dir):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
+    model = model.to(device)   # Move model to GPU/CPU
 
-    optimizer = torch.optim.Adam(
+    optimizer = torch.optim.Adam( # Adam optimizer
         model.parameters(),
         lr=config["training"]["lr"],
     )
@@ -39,26 +39,26 @@ def create_trainer(model, train_loader, val_loader, config, run_dir):
 
     def train_step(engine, batch):
 
-        model.train()
+        model.train() # Set model to training mode
 
-        src, tgt = [x.to(device) for x in batch]
+        src, tgt = [x.to(device) for x in batch] # Get input & target
 
-        tgt_input = tgt[:, :-1]
-        tgt_label = tgt[:, 1:]
+        tgt_input = tgt[:, :-1] # Target WITHOUT last token (what model sees)
+        tgt_label = tgt[:, 1:]# Target WITHOUT first token (what model predicts)
 
-        optimizer.zero_grad()
+        optimizer.zero_grad() # Reset gradients
 
-        output = model(src, tgt_input)
+        output = model(src, tgt_input) # Forward pass
 
         loss = criterion(
             output.reshape(-1, vocab_size),
             tgt_label.reshape(-1)
-        )
+        ) # Calculate loss
 
-        loss.backward()
-        optimizer.step()
+        loss.backward() # Backpropagation
+        optimizer.step() # Update weights
 
-        writer.add_scalar("train/loss", loss.item(), engine.state.iteration)
+        writer.add_scalar("train/loss", loss.item(), engine.state.iteration) # Log loss
 
         metrics_log["train_loss"].append(loss.item())
 
@@ -96,18 +96,18 @@ def create_trainer(model, train_loader, val_loader, config, run_dir):
     # -----------------------------
     # TRAIN LOG
     # -----------------------------
-
+# HANDLER 1: After every epoch, log loss and run validation
     @trainer.on(Events.EPOCH_COMPLETED)
     def log_training(engine):
 
         print(f"Epoch {engine.state.epoch} | Train Loss: {engine.state.output:.4f}")
 
-        evaluator.run(val_loader)
+        evaluator.run(val_loader) # Trigger validation
 
     # -----------------------------
     # VALIDATION LOG
     # -----------------------------
-
+# HANDLER 2: After validation completes, print val loss
     @evaluator.on(Events.COMPLETED)
     def log_validation(engine):
 
@@ -120,7 +120,7 @@ def create_trainer(model, train_loader, val_loader, config, run_dir):
     # -----------------------------
     # EARLY STOPPING
     # -----------------------------
-
+ # an early stopping handler monitors the validation loss and terminates training if it stops improving for 5 epochs
     def score_function(engine):
         val_loss = engine.state.output
         return -val_loss
@@ -136,7 +136,7 @@ def create_trainer(model, train_loader, val_loader, config, run_dir):
     # -----------------------------
     # MODEL CHECKPOINT
     # -----------------------------
-
+# HANDLER 4: Save best model checkpoint
     checkpoint = ModelCheckpoint(
         config["training"]["output_dir"],
         filename_prefix="best_model",

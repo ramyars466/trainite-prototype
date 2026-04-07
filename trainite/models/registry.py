@@ -34,10 +34,10 @@ def load_plugin_models():
 
         spec = importlib.util.spec_from_file_location(name, path)
         module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        spec.loader.exec_module(module) # Actually runs the file!
 
         if hasattr(module, "Model"):
-            MODEL_REGISTRY[name] = module.Model
+            MODEL_REGISTRY[name] = module.Model# Now it's in the registry!
 
 
 def get_model(name):

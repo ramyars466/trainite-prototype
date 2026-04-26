@@ -9,16 +9,26 @@ from trainite.utils.experiment_viewer import (
     show_experiment,
     compare_experiments
 )
+from trainite.utils.scaffold import scaffold_project
 
 app = typer.Typer()
 
 
 @app.command()
-def train(config: str = typer.Argument("trainite/configs/config.yaml", help="Path to config.yaml")):
+def train(config: str = typer.Argument("configs/config.yaml", help="Path to config.yaml")):
     """
     Train the model using config.yaml
     """
     train_main(config)
+
+@app.command()
+def init(dataset: str = typer.Option("string-reverse", help="Dataset to initialize")):
+    """
+    Initialize a reusable training script and structure
+    """
+    scaffold_project(dataset)
+    print(f"Project initialized successfully with dataset '{dataset}'")
+
 
 
 @app.command()

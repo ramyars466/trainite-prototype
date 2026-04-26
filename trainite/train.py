@@ -12,7 +12,18 @@ from trainite.models.registry import get_model
 from trainite.trainers.ignite_trainer import create_trainer
 from trainite.datasets.registry import load_plugin_datasets
 from trainite.models.registry import load_plugin_models
-from trainite.utils.experiment import create_experiment, save_config, log_metrics
+from trainite.utils.experiment import create_experiment, save_config, log_metrics, save_code_snapshot
+import glob
+import importlib.util
+
+def load_local_plugins():
+    for folder in ["models", "datasets"]:
+        if os.path.exists(folder):
+            for py_file in glob.glob(f"{folder}/*.py"):
+                name = os.path.basename(py_file).replace(".py", "")
+                spec = importlib.util.spec_from_file_location(name, py_file)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
 
 
 def load_config(path):
@@ -29,9 +40,11 @@ def main(config_path):
 
     run_dir = create_experiment(config)
     save_config(run_dir, config)
+    save_code_snapshot(run_dir, config_path)
     
     load_plugin_datasets()
     load_plugin_models()
+    load_local_plugins()
 
     
     

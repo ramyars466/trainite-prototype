@@ -79,16 +79,17 @@ def create_trainer(model, train_loader, val_loader, config, run_dir):
     )
     evaluator.add_event_handler(Events.COMPLETED, early_stopping)
 
-    checkpoint = ModelCheckpoint(
-        run_dir,
-        filename_prefix="best_model",
-        n_saved=1,
-        score_function=score_function,
-        score_name="val_loss",
-        global_step_transform=global_step_from_engine(trainer),
-        require_empty=False
-    )
-    evaluator.add_event_handler(Events.COMPLETED, checkpoint, {"model": model})
+    @evaluator.on(Events.COMPLETED)
+    def save_best_model(engine):
+        val_loss = engine.state.output
+        best_loss = getattr(engine.state, "best_loss", float("inf"))
+        if val_loss < best_loss:
+            engine.state.best_loss = val_loss
+            torch.save(model.state_dict(), os.path.join(run_dir, "best.pt"))
+            
+    @trainer.on(Events.EPOCH_COMPLETED)
+    def save_last_model(engine):
+        torch.save(model.state_dict(), os.path.join(run_dir, "last.pt"))
 
     @trainer.on(Events.COMPLETED)
     def save_metrics(engine):
@@ -107,3 +108,4 @@ def create_trainer(model, train_loader, val_loader, config, run_dir):
     #type experiments\run_20260407_214518\metrics.json
     #type experiments\run_20260407_214518\config.json
     #trainite experiment run_20260407_214518
+    #tensorboard --logdir runs

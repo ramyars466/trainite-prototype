@@ -1,5 +1,7 @@
 import os
 import json
+import shutil
+import glob
 from datetime import datetime
 
 
@@ -56,3 +58,22 @@ def save_model(run_dir, model_state):
     model_path = os.path.join(run_dir, "model.pt")
 
     torch.save(model_state, model_path)
+
+
+def save_code_snapshot(run_dir, config_path):
+    """
+    Save a snapshot of the code used for this experiment.
+    """
+    code_dir = os.path.join(run_dir, "code")
+    os.makedirs(code_dir, exist_ok=True)
+    
+    if os.path.exists(config_path):
+        shutil.copy(config_path, code_dir)
+        
+    if os.path.exists("main.py"):
+        shutil.copy("main.py", code_dir)
+        
+    for py_file in glob.glob("models/*.py") + glob.glob("datasets/*.py"):
+        dest_dir = os.path.join(code_dir, os.path.dirname(py_file))
+        os.makedirs(dest_dir, exist_ok=True)
+        shutil.copy(py_file, os.path.join(dest_dir, os.path.basename(py_file)))
